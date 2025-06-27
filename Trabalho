@@ -1,0 +1,95 @@
+class Livro:
+    def __init__(self, codigo, titulo):
+        self.codigo = codigo
+        self.titulo = titulo
+        self.Filadeespera = Filadeespera()
+        self.proximo = None
+
+class Pilhadelocação:
+    def __init__(self):
+        self.itens = []
+
+    def Registrarlocação(self, livro):
+        self.itens.append(livro)
+
+    def Mostrarlocações(self):
+        print("Livros locados:", list(reversed(self.itens)))
+            
+class Filadeespera:
+    def __init__(self):
+        self.itens = []
+
+    def Adicionarfila(self, nome):
+        self.itens.append(nome)
+
+    def Removerfila(self):
+        return self.itens.pop(0)
+
+    def Exibirfila(self):
+        print("Fila de espera:", self.itens)
+
+class Listadelivros:
+    def __init__(self):
+        self.inicio = None
+
+    def Adicionarlivro(self, codigo, titulo):
+        novo = Livro(codigo, titulo)
+        novo.proximo = self.inicio
+        self.inicio = novo
+
+    def Acharlivro(self, codigo):
+        atual = self.inicio
+        while atual:
+            if atual.codigo == codigo:
+                return atual
+            atual = atual.proximo
+        return None
+
+    def Mostrarlivros(self):
+        atual = self.inicio
+        print("Livros:")
+        while atual:
+            print(f"{atual.codigo} - {atual.titulo}")
+            atual = atual.proximo
+
+livros = Listadelivros()
+usuarios = {}
+
+while True:
+    print("1. Adicionar livro")
+    print("2. Mostrar livros")
+    print("3. Entrar na fila de um livro")
+    print("4. Chamar próximo da fila")
+    print("5. Ver histórico de locação do usuário")
+    opção = input("Digite o número para escolher oque fazer: ")
+
+    if opção == '1':
+        codigo = int(input("Código do livro: "))
+        titulo = input("Título do livro: ")
+        livros.Adicionarlivro(codigo, titulo)
+
+    elif opção == '2':
+        livros.Mostrarlivros()
+
+    elif opção == '3':
+        codigo = int(input("Código do livro: "))
+        nome = input("Nome do usuário: ")
+        livro = livros.Acharlivro(codigo)
+        livro.Filadeespera.Adicionarfila(nome)
+        print(f"{nome} entrou na fila para locar o livro '{livro.titulo}'.")
+
+        
+    elif opção == '4':
+        codigo = int(input("Código do livro: "))
+        livro = livros.Acharlivro(codigo)
+        if livro:
+            nome = livro.Filadeespera.Removerfila()
+            if nome:
+                if nome not in usuarios:
+                    usuarios[nome] = Pilhadelocação()
+                usuarios[nome].Registrarlocação(livro.titulo)
+                print(f"{nome} locou o livro '{livro.titulo}'.")
+
+    elif opção == '5':
+        nome = input("Nome do usuário: ")
+        usuarios[nome].Mostrarlocações()
